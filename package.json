@@ -11,6 +11,7 @@
   },
   "keywords": [],
   "devDependencies": {
-    "mocha-each": "^2.0.1"
+    "mocha-each": "^2.0.1",
+    "prettier": "^2.6.2"
   }
 }

@@ -3,39 +3,82 @@
  * Feel free to add the data and behavior, but don't change the public interface.
  */
 
-
 export class World {
-  constructor() {}
+  constructor() {
+    this.household = [];
+    this.powerPlant = [];
+  }
 
   createPowerPlant() {
-    throw new Error("Not Implemented");
+    this.powerPlant.push({
+      id: this.powerPlant.length,
+      isAlive: true,
+    });
+    return this.powerPlant.length - 1;
   }
 
   createHousehold() {
-    throw new Error("Not Implemented");
+    this.household.push({
+      id: this.household.length,
+      connectedPowerPlants: [],
+      connectedHouseholds: [],
+    });
+    return this.household.length - 1;
   }
 
-  connectHouseholdToPowerPlant(household, powerPlant) {
-    throw new Error("Not Implemented");
+  connectHouseholdToPowerPlant(householdId, powerPlantId) {
+    if (
+      !this.household[householdId].connectedPowerPlants.includes(powerPlantId)
+    ) {
+      this.household[householdId].connectedPowerPlants.push(powerPlantId);
+    }
   }
 
   connectHouseholdToHousehold(household1, household2) {
-    throw new Error("Not Implemented");
+    if (!this.household[household1].connectedHouseholds.includes(household2)) {
+      this.household[household1].connectedHouseholds.push(household2);
+      this.household[household2].connectedHouseholds.push(household1);
+    }
   }
 
-  disconnectHouseholdFromPowerPlant(household, powerPlant) {
-    throw new Error("Not Implemented");
+  disconnectHouseholdFromPowerPlant(householdId, powerPlantId) {
+    if (
+      this.household[householdId].connectedPowerPlants.includes(powerPlantId)
+    ) {
+      const indexOfPowerPlant =
+        this.household[householdId].connectedPowerPlants.indexOf(powerPlantId);
+      this.household[householdId].connectedPowerPlants.splice(
+        indexOfPowerPlant,
+        1
+      );
+    }
   }
 
-  killPowerPlant(powerPlant) {
-    throw new Error("Not Implemented");
+  killPowerPlant(powerPlantId) {
+    this.powerPlant[powerPlantId].isAlive = false;
   }
 
-  repairPowerPlant(powerPlant) {
-    throw new Error("Not Implemented");
+  repairPowerPlant(powerPlantId) {
+    this.powerPlant[powerPlantId].isAlive = true;
   }
 
-  householdHasEletricity(household) {
-    throw new Error("Not Implemented");
+  householdHasEletricity(householdId, previousIds = []) {
+    //not forEach or smth like this, because of i can't use return with this method
+    for(let i = 0; i < this.household[householdId].connectedPowerPlants.length; i++){
+      const el = this.household[householdId].connectedPowerPlants[i];
+      if (this.powerPlant[el].isAlive){
+        return true;
+      }
+    }
+    for(let i = 0; i < this.household[householdId].connectedHouseholds.length; i++){
+      const el = this.household[householdId].connectedHouseholds[i];
+      previousIds.push(householdId);
+      if (!previousIds.includes(el)){
+        if (this.householdHasEletricity(el,previousIds)){
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }
